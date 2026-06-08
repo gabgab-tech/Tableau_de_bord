@@ -569,7 +569,7 @@ async function loadTaches(){
         {property:'statut',select:{equals:'Pas commencé'}},
         {property:'statut',select:{equals:'En cours'}}
       ]},
-      sorts:[{property:'statut',direction:'ascending'},{property:'priorité',direction:'descending'}],
+      sorts:[{property:'statut',direction:'ascending'}],
       page_size:15
     });
     el.innerHTML='';
