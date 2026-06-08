@@ -434,7 +434,13 @@ const DB_VIDE_TETE = '23147683-6547-8015-8780-000b2ed7530c';
 // APPEL API NOTION (via proxy)
 // ═══════════════════════════════════════════════
 async function notionQuery(endpoint, body) {
-  const res = await fetch(`https://api.notion.com/v1/${endpoint}`, {
+  const res = await fetch('/.netlify/functions/notion', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ endpoint, body })
+  });
+  return res.json();
+}
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${NOTION_TOKEN}`,
