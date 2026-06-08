@@ -1,9 +1,9 @@
 const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
-  const { endpoint, body } = JSON.parse(event.body);
+  const { endpoint, body, method } = JSON.parse(event.body);
   const res = await fetch(`https://api.notion.com/v1/${endpoint}`, {
-    method: 'POST',
+    method: method || 'POST',
     headers: {
       'Authorization': `Bearer ${process.env.NOTION_TOKEN}`,
       'Notion-Version': '2022-06-28',
