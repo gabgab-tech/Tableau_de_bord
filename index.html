@@ -440,16 +440,7 @@ async function notionQuery(endpoint, body) {
   });
   return res.json();
 }
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${NOTION_TOKEN}`,
-      'Notion-Version': '2022-06-28',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
-  });
-  return res.json();
-}
+
 
 async function notionPatch(endpoint, body) {
   const res = await fetch('/.netlify/functions/notion', {
