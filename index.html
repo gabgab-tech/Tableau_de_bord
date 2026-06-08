@@ -1,1 +1,824 @@
-element.style { } .header { background: var(--text); color: var(--bg); padding: 20px 24px; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; } * { box-sizing: border-box; margin: 0; padding: 0; } user agent stylesheet header { display: block; unicode-bidi: isolate; } body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; } :root { --bg: #F5F0E8; --bg2: #EDE7D9; --card: #FDFAF4; --border: #D4C9B0; --text: #2C2416; --muted: #8A7D64; --sage: #6B8C72; --sage-light: #B8D0BC; --terracotta: #C4704A; --terra-light: #F0D4C4; --gold: #C49A3C; --gold-light: #F0E4C0; --plum: #7A5C7A; --plum-light: #E4D4E4; --sky: #4A7A8C; --sky-light: #C4DCE4; }
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tableau de bord — Gabrielle</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F0E8; --bg2: #EDE7D9; --card: #FDFAF4; --border: #D4C9B0;
+    --text: #2C2416; --muted: #8A7D64; --sage: #6B8C72; --sage-light: #B8D0BC;
+    --terracotta: #C4704A; --terra-light: #F0D4C4; --gold: #C49A3C;
+    --gold-light: #F0E4C0; --plum: #7A5C7A; --plum-light: #E4D4E4;
+    --sky: #4A7A8C; --sky-light: #C4DCE4;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* HEADER */
+  .header {
+    background: var(--text); color: var(--bg);
+    padding: 20px 24px; display: flex; align-items: flex-end;
+    justify-content: space-between; gap: 16px;
+  }
+  .header h1 { font-family: 'Fraunces', serif; font-size: 1.8rem; font-weight: 300; line-height: 1; }
+  .header h1 em { font-style: italic; color: var(--gold); }
+  .header p { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .time-display { font-family: 'Fraunces', serif; font-size: 1rem; font-style: italic; opacity: 0.85; }
+  .energie-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 100px; padding: 5px 12px; font-size: 0.7rem;
+    font-family: 'DM Mono', monospace; cursor: pointer; color: var(--bg);
+  }
+  .energie-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--sage-light); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* LAYOUT */
+  .main { display: grid; grid-template-columns: 1fr; gap: 0; }
+  @media(min-width:768px) { .main { grid-template-columns: 300px 1fr 260px; } }
+
+  .col { border-bottom: 1px solid var(--border); padding: 20px 16px; display: flex; flex-direction: column; gap: 16px; }
+  @media(min-width:768px) { .col { border-bottom: none; border-right: 1px solid var(--border); max-height: calc(100vh - 90px); overflow-y: auto; } }
+  .col:last-child { border: none; }
+
+  /* CARDS */
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
+  .col-title { font-family: 'DM Mono', monospace; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); margin-bottom: 10px; }
+  .col-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .col-action { font-size: 0.68rem; color: var(--terracotta); cursor: pointer; font-family: 'DM Mono', monospace; }
+
+  /* VIDE TÊTE */
+  .vide-input {
+    width: 100%; background: var(--bg2); border: 1.5px dashed var(--border);
+    border-radius: 8px; padding: 12px 14px; font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem; color: var(--text); resize: none; min-height: 80px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .vide-input:focus { border-color: var(--terracotta); border-style: solid; background: var(--card); }
+  .vide-input::placeholder { color: var(--muted); font-style: italic; }
+  .tri-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px; }
+  .tri-btn {
+    padding: 8px; border-radius: 7px; border: 1.5px solid; font-size: 0.72rem;
+    font-family: 'Outfit', sans-serif; font-weight: 500; cursor: pointer;
+    transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px;
+    background: transparent;
+  }
+  .tri-tache { border-color: var(--sage); color: var(--sage); }
+  .tri-tache:hover { background: var(--sage-light); color: var(--text); }
+  .tri-idee { border-color: var(--plum); color: var(--plum); }
+  .tri-idee:hover { background: var(--plum-light); color: var(--text); }
+  .tri-course { border-color: var(--gold); color: var(--gold); }
+  .tri-course:hover { background: var(--gold-light); color: var(--text); }
+  .tri-attente { border-color: var(--sky); color: var(--sky); }
+  .tri-attente:hover { background: var(--sky-light); color: var(--text); }
+
+  /* TÂCHES */
+  .today-header {
+    background: var(--text); color: var(--bg); border-radius: 10px 10px 0 0;
+    padding: 12px 16px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .today-header h2 { font-family: 'Fraunces', serif; font-size: 1rem; font-weight: 400; font-style: italic; }
+  .today-body { background: var(--card); border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; padding: 12px 16px; }
+  .prio-label { font-family: 'DM Mono', monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--terracotta); margin-bottom: 8px; }
+
+  .task-item { display: flex; align-items: flex-start; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--bg2); }
+  .task-item:last-child { border-bottom: none; }
+  .task-check {
+    width: 17px; height: 17px; border-radius: 50%; border: 2px solid var(--border);
+    flex-shrink: 0; margin-top: 1px; cursor: pointer; background: white;
+    position: relative; transition: all 0.15s;
+  }
+  .task-check:hover { border-color: var(--sage); }
+  .task-check.done { background: var(--sage); border-color: var(--sage); }
+  .task-check.done::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: white; font-size: 9px; font-weight: bold; }
+  .task-text { font-size: 0.84rem; line-height: 1.4; flex: 1; }
+  .task-text.done-text { text-decoration: line-through; color: var(--muted); }
+  .task-tag { font-family: 'DM Mono', monospace; font-size: 0.58rem; padding: 2px 6px; border-radius: 100px; flex-shrink: 0; }
+  .tag-compta { background: var(--sky-light); color: var(--sky); }
+  .tag-maison { background: var(--gold-light); color: var(--gold); }
+  .tag-coop { background: var(--plum-light); color: var(--plum); }
+  .tag-perso { background: var(--terra-light); color: var(--terracotta); }
+  .tag-sante { background: var(--sage-light); color: var(--sage); }
+  .tag-epicerie { background: var(--gold-light); color: var(--gold); }
+  .tag-famille { background: var(--sky-light); color: var(--sky); }
+
+  .add-btn {
+    margin-top: 10px; width: 100%; padding: 8px; background: var(--bg2);
+    border: 1.5px dashed var(--border); border-radius: 7px; font-size: 0.78rem;
+    color: var(--muted); cursor: pointer; font-family: 'Outfit', sans-serif;
+    transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+  .add-btn:hover { border-color: var(--sage); color: var(--sage); }
+
+  /* REPAS */
+  .repas-header { background: var(--sage); color: white; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; border-radius: 10px 10px 0 0; }
+  .repas-header h3 { font-family: 'Fraunces', serif; font-size: 0.9rem; font-weight: 400; font-style: italic; }
+  .repas-body { background: var(--card); border: 1px solid var(--border); border-top: none; border-radius: 0 0 10px 10px; }
+  .repas-row { display: flex; align-items: center; padding: 9px 16px; border-bottom: 1px solid var(--bg2); gap: 10px; }
+  .repas-row:last-child { border-bottom: none; }
+  .repas-jour { font-family: 'DM Mono', monospace; font-size: 0.62rem; text-transform: uppercase; color: var(--muted); width: 36px; flex-shrink: 0; }
+  .repas-nom { font-size: 0.82rem; flex: 1; }
+  .repas-badge { font-size: 0.6rem; font-family: 'DM Mono', monospace; padding: 2px 7px; border-radius: 100px; }
+  .e-survie { background: var(--sky-light); color: var(--sky); }
+  .e-facile { background: var(--sage-light); color: var(--sage); }
+  .e-normale { background: var(--gold-light); color: var(--gold); }
+  .e-motive { background: var(--terra-light); color: var(--terracotta); }
+  .decongeler { font-size: 0.65rem; color: var(--terracotta); }
+
+  /* ÉPICERIE */
+  .epicerie-cat { font-family: 'DM Mono', monospace; font-size: 0.58rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin: 10px 0 6px; padding-bottom: 4px; border-bottom: 1px solid var(--border); }
+  .epi-item { display: flex; align-items: center; gap: 7px; padding: 5px 4px; font-size: 0.8rem; cursor: pointer; border-radius: 5px; transition: background 0.1s; }
+  .epi-item:hover { background: var(--bg2); }
+  .epi-check { width: 14px; height: 14px; border: 1.5px solid var(--border); border-radius: 3px; flex-shrink: 0; background: white; position: relative; transition: all 0.15s; }
+  .epi-check.checked { background: var(--sage); border-color: var(--sage); }
+  .epi-check.checked::after { content: '✓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); color: white; font-size: 8px; }
+  .epi-item.done span:not(.special) { text-decoration: line-through; color: var(--muted); }
+  .special { font-size: 0.58rem; background: var(--terra-light); color: var(--terracotta); padding: 1px 5px; border-radius: 100px; font-family: 'DM Mono', monospace; margin-left: auto; flex-shrink: 0; }
+
+  /* JOURNAL */
+  .sante-row { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--bg2); font-size: 0.8rem; }
+  .sante-row:last-child { border-bottom: none; }
+  .sante-label { color: var(--muted); font-size: 0.76rem; }
+  .sante-btns { display: flex; gap: 4px; }
+  .s-btn { width: 26px; height: 26px; border-radius: 50%; border: 1.5px solid var(--border); background: white; cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
+  .s-btn:hover { transform: scale(1.1); }
+  .s-btn.sel { background: var(--sage); border-color: var(--sage); }
+
+  /* LOADING */
+  .loading { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.78rem; font-family: 'DM Mono', monospace; padding: 8px 0; }
+  .spinner { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--sage); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* BOTTOM */
+  .bottom { background: var(--bg2); border-top: 1px solid var(--border); padding: 12px 20px; display: flex; flex-wrap: wrap; gap: 16px; font-size: 0.7rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .bottom a { color: var(--muted); text-decoration: none; transition: color 0.15s; }
+  .bottom a:hover { color: var(--terracotta); }
+  .sync-info { margin-left: auto; font-size: 0.65rem; }
+
+  /* NOTION STATUS */
+  .notion-status { display: inline-flex; align-items: center; gap: 5px; font-family: 'DM Mono', monospace; font-size: 0.62rem; padding: 3px 9px; border-radius: 100px; background: var(--bg2); border: 1px solid var(--border); color: var(--muted); }
+  .notion-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+  .notion-dot.connected { background: var(--sage); }
+  .notion-dot.error { background: var(--terracotta); }
+
+  .section-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .section-label span { color: var(--terracotta); cursor: pointer; font-size: 0.65rem; }
+
+  .prog-bar { height: 3px; background: var(--border); border-radius: 100px; margin-top: 5px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 100px; transition: width 0.4s; }
+
+  .projet-item { display: flex; align-items: center; gap: 8px; padding: 7px 6px; border-radius: 6px; cursor: pointer; transition: background 0.1s; border-bottom: 1px solid var(--bg2); }
+  .projet-item:last-child { border-bottom: none; }
+  .projet-item:hover { background: var(--bg2); }
+  .projet-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .projet-info { flex: 1; }
+  .projet-nom { font-size: 0.82rem; font-weight: 500; }
+  .projet-sous { font-size: 0.7rem; color: var(--muted); margin-top: 1px; }
+  .projet-pct { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--muted); }
+
+  .recur-item { display: flex; align-items: center; gap: 8px; padding: 6px 6px; border-radius: 6px; font-size: 0.78rem; cursor: pointer; transition: background 0.1s; }
+  .recur-item:hover { background: var(--bg2); }
+  .recur-freq { font-family: 'DM Mono', monospace; font-size: 0.58rem; color: var(--muted); margin-left: auto; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div>
+    <h1>Bonjour, <em>Gabrielle</em></h1>
+    <p id="date-str">—</p>
+  </div>
+  <div class="header-right">
+    <div class="time-display" id="time-str">—</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div class="notion-status">
+        <div class="notion-dot" id="notion-dot"></div>
+        <span id="notion-status-txt">Notion...</span>
+      </div>
+      <div class="energie-badge" onclick="cycleEnergie(this)">
+        <div class="energie-dot"></div>
+        <span id="energie-lbl">Énergie : Normale 🙂</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- COL 1 : GAUCHE -->
+  <div class="col">
+
+    <!-- VIDE TÊTE -->
+    <div>
+      <div class="col-header">
+        <div class="col-title">🌀 Vide Tête</div>
+        <span class="notion-status" style="font-size:0.58rem;" id="vt-count">—</span>
+      </div>
+      <textarea class="vide-input" id="vide-input" placeholder="Tout ce qui tourne dans ta tête..."></textarea>
+      <div class="tri-grid">
+        <button class="tri-btn tri-tache"   onclick="addToNotion('tâche rapide')">✓ Tâche</button>
+        <button class="tri-btn tri-idee"    onclick="addToNotion('à planifier')">💡 Idée</button>
+        <button class="tri-btn tri-course"  onclick="addToNotion('épicerie')">🛒 Course</button>
+        <button class="tri-btn tri-attente" onclick="addToNotion('événement')">⏳ En attente</button>
+      </div>
+    </div>
+
+    <!-- ITEMS VIDE TÊTE EN ATTENTE -->
+    <div>
+      <div class="section-label">
+        À traiter
+        <span onclick="loadVideTete()">↻ Rafraîchir</span>
+      </div>
+      <div id="vide-tete-list">
+        <div class="loading"><div class="spinner"></div> Chargement...</div>
+      </div>
+    </div>
+
+    <!-- PROJETS -->
+    <div>
+      <div class="col-header">
+        <div class="col-title">🗂 Projets</div>
+      </div>
+      <div class="card" style="padding:10px 12px;">
+        <div class="projet-item">
+          <div class="projet-dot" style="background:var(--sky)"></div>
+          <div class="projet-info">
+            <div class="projet-nom">Tableau de bord Notion</div>
+            <div class="projet-sous">Connexion live ✅</div>
+            <div class="prog-bar"><div class="prog-fill" style="width:70%;background:var(--sky)"></div></div>
+          </div>
+          <div class="projet-pct">70%</div>
+        </div>
+        <div class="projet-item">
+          <div class="projet-dot" style="background:var(--terracotta)"></div>
+          <div class="projet-info">
+            <div class="projet-nom">Diagnostic comptable</div>
+            <div class="projet-sous">Rapport Q2</div>
+            <div class="prog-bar"><div class="prog-fill" style="width:35%;background:var(--terracotta)"></div></div>
+          </div>
+          <div class="projet-pct">35%</div>
+        </div>
+        <div class="projet-item">
+          <div class="projet-dot" style="background:var(--plum)"></div>
+          <div class="projet-info">
+            <div class="projet-nom">Coopérative</div>
+            <div class="projet-sous">C.A. prochain lundi</div>
+            <div class="prog-bar"><div class="prog-fill" style="width:80%;background:var(--plum)"></div></div>
+          </div>
+          <div class="projet-pct">80%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RÉCURRENTES -->
+    <div>
+      <div class="col-title">🔁 Tâches récurrentes</div>
+      <div class="card" style="padding:8px 12px;">
+        <div class="recur-item">📊 Faire les dépôts <span class="recur-freq">hebdo</span></div>
+        <div class="recur-item">🧾 Classer factures <span class="recur-freq">hebdo</span></div>
+        <div class="recur-item">🌿 Commander Lufa <span class="recur-freq">dim.</span></div>
+        <div class="recur-item">📅 Planif. repas VENDREDI <span class="recur-freq">hebdo</span></div>
+        <div class="recur-item">💊 Commander pharmacie <span class="recur-freq">mensuel</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 2 : CENTRE -->
+  <div class="col">
+
+    <!-- AUJOURD'HUI -->
+    <div>
+      <div class="today-header">
+        <h2>Aujourd'hui</h2>
+        <div style="font-size:0.65rem;opacity:0.7;font-family:'DM Mono',monospace;">3 priorités max</div>
+      </div>
+      <div class="today-body">
+        <div class="prio-label">✦ Tes 3 priorités du jour</div>
+        <div id="priorites-list">
+          <div class="loading"><div class="spinner"></div> Chargement depuis Notion...</div>
+        </div>
+        <button class="add-btn" onclick="addPriorite()">+ Ajouter une priorité</button>
+      </div>
+    </div>
+
+    <!-- MES TÂCHES -->
+    <div>
+      <div class="section-label">
+        Mes tâches — en cours
+        <span onclick="loadTaches()">↻ Rafraîchir</span>
+      </div>
+      <div id="taches-list">
+        <div class="loading"><div class="spinner"></div> Chargement...</div>
+      </div>
+    </div>
+
+    <!-- PLAN REPAS -->
+    <div>
+      <div class="section-label">
+        🍽 Plan de repas — semaine
+        <span onclick="alert('Lance VENDREDI pour générer le plan !')">Planifier →</span>
+      </div>
+      <div>
+        <div class="repas-header">
+          <h3>Soupers de la semaine</h3>
+          <span style="font-family:'DM Mono',monospace;font-size:0.58rem;opacity:0.75;">dim → jeu</span>
+        </div>
+        <div class="repas-body" id="repas-list">
+          <div class="repas-row"><div class="repas-jour">DIM</div><div class="repas-nom" style="color:var(--muted);font-style:italic;">— Lance VENDREDI pour planifier</div></div>
+          <div class="repas-row"><div class="repas-jour">LUN</div><div class="repas-nom" style="color:var(--muted);font-style:italic;">—</div></div>
+          <div class="repas-row"><div class="repas-jour">MAR</div><div class="repas-nom" style="color:var(--muted);font-style:italic;">—</div></div>
+          <div class="repas-row"><div class="repas-jour">MER</div><div class="repas-nom" style="color:var(--muted);font-style:italic;">—</div></div>
+          <div class="repas-row"><div class="repas-jour">JEU</div><div class="repas-nom">Congelé maison ❄️</div><span class="repas-badge e-survie">survie</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JOURNAL SANTÉ -->
+    <div>
+      <div class="section-label">🌿 Journal santé — aujourd'hui</div>
+      <div class="card">
+        <div class="sante-row">
+          <span class="sante-label">😴 Sommeil</span>
+          <div class="sante-btns">
+            <div class="s-btn" onclick="selectSante(this)">😴</div>
+            <div class="s-btn" onclick="selectSante(this)">😐</div>
+            <div class="s-btn sel" onclick="selectSante(this)">✨</div>
+          </div>
+        </div>
+        <div class="sante-row">
+          <span class="sante-label">⚡ Énergie</span>
+          <div class="sante-btns">
+            <div class="s-btn" onclick="selectSante(this)">🪫</div>
+            <div class="s-btn sel" onclick="selectSante(this)">⚡</div>
+            <div class="s-btn" onclick="selectSante(this)">🚀</div>
+          </div>
+        </div>
+        <div class="sante-row">
+          <span class="sante-label">🧠 Focus TDAH</span>
+          <div class="sante-btns">
+            <div class="s-btn" onclick="selectSante(this)">🌀</div>
+            <div class="s-btn sel" onclick="selectSante(this)">🎯</div>
+            <div class="s-btn" onclick="selectSante(this)">⚡</div>
+          </div>
+        </div>
+        <div class="sante-row">
+          <span class="sante-label">😌 Humeur</span>
+          <div class="sante-btns">
+            <div class="s-btn" onclick="selectSante(this)">😔</div>
+            <div class="s-btn" onclick="selectSante(this)">😊</div>
+            <div class="s-btn sel" onclick="selectSante(this)">🌟</div>
+          </div>
+        </div>
+        <div class="sante-row">
+          <span class="sante-label">💊 Médication</span>
+          <div class="sante-btns">
+            <div class="s-btn" onclick="selectSante(this)" style="font-size:0.7rem;">Non</div>
+            <div class="s-btn sel" onclick="selectSante(this)" style="font-size:0.7rem;">Oui</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- COL 3 : DROITE -->
+  <div class="col">
+
+    <!-- LISTE ÉPICERIE depuis Notion -->
+    <div>
+      <div class="col-header">
+        <div class="col-title">🛒 Courses — depuis Notion</div>
+        <span class="col-action" onclick="loadEpicerie()">↻</span>
+      </div>
+      <div class="card" style="padding:10px 14px;" id="epicerie-list">
+        <div class="loading"><div class="spinner"></div> Chargement...</div>
+      </div>
+    </div>
+
+    <!-- IDÉES -->
+    <div>
+      <div class="col-header">
+        <div class="col-title">💡 Idées & À planifier</div>
+        <span class="col-action" onclick="loadIdees()">↻</span>
+      </div>
+      <div id="idees-list">
+        <div class="loading"><div class="spinner"></div> Chargement...</div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer class="bottom">
+  <a href="#">🍽 Planifier VENDREDI</a>
+  <a href="#">📚 Banque recettes</a>
+  <a href="#">🏕️ Chalet</a>
+  <a href="#">🌿 Soins naturels</a>
+  <div class="sync-info" id="sync-info">Sync en cours...</div>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════
+// CONFIG NOTION
+// ═══════════════════════════════════════════════
+const NOTION_TOKEN = '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';
+const DB_VIDE_TETE = '23147683-6547-8015-8780-000b2ed7530c';
+
+// ═══════════════════════════════════════════════
+// APPEL API NOTION (via proxy)
+// ═══════════════════════════════════════════════
+async function notionQuery(endpoint, body) {
+  const res = await fetch(`https://api.notion.com/v1/${endpoint}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${NOTION_TOKEN}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+async function notionPatch(endpoint, body) {
+  const res = await fetch(`https://api.notion.com/v1/${endpoint}`, {
+    method: 'PATCH',
+    headers: {
+      'Authorization': `Bearer ${NOTION_TOKEN}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+async function notionPost(endpoint, body) {
+  const res = await fetch(`https://api.notion.com/v1/${endpoint}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${NOTION_TOKEN}`,
+      'Notion-Version': '2022-06-28',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  return res.json();
+}
+
+// ═══════════════════════════════════════════════
+// DATE & HEURE
+// ═══════════════════════════════════════════════
+function updateDateTime() {
+  const now = new Date();
+  const jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const mois = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+  document.getElementById('date-str').textContent = `${jours[now.getDay()]} ${now.getDate()} ${mois[now.getMonth()]} ${now.getFullYear()}`;
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('time-str').textContent = `${h}h${m}`;
+}
+updateDateTime();
+setInterval(updateDateTime, 30000);
+
+// ═══════════════════════════════════════════════
+// ÉNERGIE
+// ═══════════════════════════════════════════════
+const energies = ['Survie 🆘','Faible 😓','Normale 🙂','Motivée 💪'];
+let eIdx = 2;
+function cycleEnergie() {
+  eIdx = (eIdx+1) % energies.length;
+  document.getElementById('energie-lbl').textContent = 'Énergie : ' + energies[eIdx];
+}
+
+// ═══════════════════════════════════════════════
+// SANTÉ
+// ═══════════════════════════════════════════════
+function selectSante(el) {
+  const btns = el.parentElement.querySelectorAll('.s-btn');
+  btns.forEach(b => b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ═══════════════════════════════════════════════
+// TAG COLOR
+// ═══════════════════════════════════════════════
+function getTagClass(cat) {
+  const map = {
+    'épicerie': 'tag-epicerie', 'tâche rapide': 'tag-perso',
+    'projet': 'tag-compta', 'à planifier': 'tag-maison',
+    'achat autre': 'tag-maison', 'coop': 'tag-coop',
+    'soin perso': 'tag-sante', 'famille-hannah': 'tag-famille',
+    'finance': 'tag-compta', 'événement': 'tag-sky',
+  };
+  return map[cat] || 'tag-perso';
+}
+
+// ═══════════════════════════════════════════════
+// CHARGER VIDE TÊTE
+// ═══════════════════════════════════════════════
+async function loadVideTete() {
+  const el = document.getElementById('vide-tete-list');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div> Chargement...</div>';
+  try {
+    const data = await notionQuery(`databases/${DB_VIDE_TETE}/query`, {
+      filter: { property: 'Status Update', status: { does_not_equal: 'classé' } },
+      sorts: [{ property: 'Date de création', direction: 'descending' }],
+      page_size: 15
+    });
+    if (!data.results || data.results.length === 0) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;padding:8px 0;font-style:italic;">Vide tête vide — bonne nouvelle ! 🌿</div>';
+      document.getElementById('vt-count').textContent = '0 item';
+      return;
+    }
+    document.getElementById('vt-count').textContent = data.results.length + ' items';
+    el.innerHTML = '';
+    data.results.forEach(page => {
+      const titre = page.properties['Titre']?.title?.[0]?.plain_text || '(sans titre)';
+      const cat = page.properties['Catégorie']?.select?.name || '';
+      const status = page.properties['Status Update']?.status?.name || '';
+      const div = document.createElement('div');
+      div.className = 'task-item';
+      div.innerHTML = `
+        <div class="task-check ${status === 'prêt' ? 'done' : ''}" onclick="toggleStatus('${page.id}', this)"></div>
+        <div class="task-text">${titre}</div>
+        ${cat ? `<span class="task-tag ${getTagClass(cat)}">${cat}</span>` : ''}
+      `;
+      el.appendChild(div);
+    });
+    setNotionConnected(true);
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--terracotta);font-size:0.78rem;">Erreur de connexion Notion</div>';
+    setNotionConnected(false);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// CHARGER PRIORITÉS (tâches Aujourd'hui-urgent)
+// ═══════════════════════════════════════════════
+async function loadPriorites() {
+  const el = document.getElementById('priorites-list');
+  try {
+    const data = await notionQuery(`databases/${DB_VIDE_TETE}/query`, {
+      filter: {
+        and: [
+          { property: 'Priorité ', select: { equals: "Aujourd'hui-urgent" } },
+          { property: 'Status Update', status: { does_not_equal: 'classé' } }
+        ]
+      },
+      page_size: 5
+    });
+    if (!data.results || data.results.length === 0) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;padding:8px 0;font-style:italic;">Aucune priorité urgente aujourd\'hui 🌿</div>';
+      return;
+    }
+    el.innerHTML = '';
+    data.results.slice(0,3).forEach(page => {
+      const titre = page.properties['Titre']?.title?.[0]?.plain_text || '(sans titre)';
+      const cat = page.properties['Catégorie']?.select?.name || '';
+      const div = document.createElement('div');
+      div.className = 'task-item';
+      div.innerHTML = `
+        <div class="task-check" onclick="toggleStatus('${page.id}', this)"></div>
+        <div class="task-text">${titre}</div>
+        ${cat ? `<span class="task-tag ${getTagClass(cat)}">${cat}</span>` : ''}
+      `;
+      el.appendChild(div);
+    });
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--muted);font-size:0.78rem;">Lance une tâche depuis Notion !</div>';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// CHARGER TÂCHES (cette semaine + demain)
+// ═══════════════════════════════════════════════
+async function loadTaches() {
+  const el = document.getElementById('taches-list');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div> Chargement...</div>';
+  try {
+    const data = await notionQuery(`databases/${DB_VIDE_TETE}/query`, {
+      filter: {
+        and: [
+          { property: 'Status Update', status: { does_not_equal: 'classé' } },
+          { property: 'Catégorie', select: { does_not_equal: 'épicerie' } },
+          { property: 'Catégorie', select: { does_not_equal: 'à planifier' } }
+        ]
+      },
+      sorts: [{ property: 'Date de création', direction: 'descending' }],
+      page_size: 10
+    });
+    el.innerHTML = '';
+    if (!data.results || data.results.length === 0) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;padding:8px;font-style:italic;">Aucune tâche en cours 🎉</div>';
+      return;
+    }
+    data.results.forEach(page => {
+      const titre = page.properties['Titre']?.title?.[0]?.plain_text || '(sans titre)';
+      const cat = page.properties['Catégorie']?.select?.name || '';
+      const status = page.properties['Status Update']?.status?.name || '';
+      const div = document.createElement('div');
+      div.className = 'task-item';
+      div.innerHTML = `
+        <div class="task-check ${status === 'prêt' ? 'done' : ''}" onclick="toggleStatus('${page.id}', this)"></div>
+        <div class="task-text ${status === 'classé' ? 'done-text' : ''}">${titre}</div>
+        ${cat ? `<span class="task-tag ${getTagClass(cat)}">${cat}</span>` : ''}
+      `;
+      el.appendChild(div);
+    });
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--terracotta);font-size:0.78rem;">Erreur Notion</div>';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// CHARGER ÉPICERIE
+// ═══════════════════════════════════════════════
+async function loadEpicerie() {
+  const el = document.getElementById('epicerie-list');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div> Chargement...</div>';
+  try {
+    const data = await notionQuery(`databases/${DB_VIDE_TETE}/query`, {
+      filter: {
+        and: [
+          { property: 'Catégorie', select: { equals: 'épicerie' } },
+          { property: 'Status Update', status: { does_not_equal: 'classé' } }
+        ]
+      },
+      sorts: [{ property: 'Date de création', direction: 'ascending' }],
+      page_size: 30
+    });
+    el.innerHTML = '';
+    if (!data.results || data.results.length === 0) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;padding:8px;font-style:italic;">Liste vide — ajoute via Vide Tête 🛒</div>';
+      return;
+    }
+    const titre_el = document.createElement('div');
+    titre_el.className = 'epicerie-cat';
+    titre_el.textContent = '🛒 À acheter';
+    el.appendChild(titre_el);
+    data.results.forEach(page => {
+      const titre = page.properties['Titre']?.title?.[0]?.plain_text || '(sans titre)';
+      const div = document.createElement('div');
+      div.className = 'epi-item';
+      div.onclick = () => toggleEpicerie(div, page.id);
+      div.innerHTML = `<div class="epi-check"></div><span>${titre}</span>`;
+      el.appendChild(div);
+    });
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-btn';
+    addBtn.textContent = '+ Ajouter un article';
+    addBtn.onclick = () => addToNotion('épicerie');
+    el.appendChild(addBtn);
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--terracotta);font-size:0.78rem;">Erreur Notion</div>';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// CHARGER IDÉES
+// ═══════════════════════════════════════════════
+async function loadIdees() {
+  const el = document.getElementById('idees-list');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div> Chargement...</div>';
+  try {
+    const data = await notionQuery(`databases/${DB_VIDE_TETE}/query`, {
+      filter: {
+        and: [
+          { property: 'Catégorie', select: { equals: 'à planifier' } },
+          { property: 'Status Update', status: { does_not_equal: 'classé' } }
+        ]
+      },
+      page_size: 10
+    });
+    el.innerHTML = '';
+    if (!data.results || data.results.length === 0) {
+      el.innerHTML = '<div style="color:var(--muted);font-size:0.8rem;padding:8px;font-style:italic;">Aucune idée en attente 💡</div>';
+      return;
+    }
+    data.results.forEach(page => {
+      const titre = page.properties['Titre']?.title?.[0]?.plain_text || '(sans titre)';
+      const div = document.createElement('div');
+      div.className = 'task-item';
+      div.innerHTML = `
+        <div style="font-size:0.9rem;">💡</div>
+        <div class="task-text">${titre}</div>
+        <span class="task-tag tag-maison">idée</span>
+      `;
+      el.appendChild(div);
+    });
+  } catch(e) {
+    el.innerHTML = '<div style="color:var(--terracotta);font-size:0.78rem;">Erreur Notion</div>';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// TOGGLE STATUS (cocher une tâche)
+// ═══════════════════════════════════════════════
+async function toggleStatus(pageId, checkEl) {
+  checkEl.classList.toggle('done');
+  const isDone = checkEl.classList.contains('done');
+  const txtEl = checkEl.nextElementSibling;
+  if (txtEl) txtEl.classList.toggle('done-text', isDone);
+  try {
+    await notionPatch(`pages/${pageId}`, {
+      properties: {
+        'Status Update': { status: { name: isDone ? 'classé' : 'à traiter' } }
+      }
+    });
+  } catch(e) {
+    console.error('Erreur mise à jour Notion', e);
+  }
+}
+
+// ═══════════════════════════════════════════════
+// TOGGLE ÉPICERIE
+// ═══════════════════════════════════════════════
+async function toggleEpicerie(rowEl, pageId) {
+  const check = rowEl.querySelector('.epi-check');
+  const txt = rowEl.querySelector('span');
+  check.classList.toggle('checked');
+  const isDone = check.classList.contains('checked');
+  if (isDone) { txt.style.textDecoration='line-through'; txt.style.color='var(--muted)'; }
+  else { txt.style.textDecoration=''; txt.style.color=''; }
+  try {
+    await notionPatch(`pages/${pageId}`, {
+      properties: { 'Status Update': { status: { name: isDone ? 'classé' : 'à traiter' } } }
+    });
+  } catch(e) { console.error(e); }
+}
+
+// ═══════════════════════════════════════════════
+// AJOUTER AU VIDE TÊTE NOTION
+// ═══════════════════════════════════════════════
+async function addToNotion(categorie) {
+  const input = document.getElementById('vide-input');
+  const txt = input.value.trim();
+  if (!txt) { input.focus(); input.placeholder = 'Écris quelque chose d\'abord !'; return; }
+  input.disabled = true;
+  try {
+    await notionPost('pages', {
+      parent: { database_id: DB_VIDE_TETE },
+      properties: {
+        'Titre': { title: [{ text: { content: txt } }] },
+        'Catégorie': { select: { name: categorie } },
+        'Status Update': { status: { name: 'à traiter' } }
+      }
+    });
+    input.value = '';
+    input.placeholder = '✅ Ajouté à Notion !';
+    setTimeout(() => { input.placeholder = 'Tout ce qui tourne dans ta tête...'; }, 2000);
+    loadVideTete();
+    if (categorie === 'épicerie') loadEpicerie();
+    if (categorie === 'à planifier') loadIdees();
+  } catch(e) {
+    input.placeholder = '❌ Erreur — réessaie';
+  }
+  input.disabled = false;
+}
+
+// ═══════════════════════════════════════════════
+// AJOUTER PRIORITÉ
+// ═══════════════════════════════════════════════
+function addPriorite() {
+  const txt = prompt('Quelle est ta priorité du jour ?');
+  if (!txt) return;
+  notionPost('pages', {
+    parent: { database_id: DB_VIDE_TETE },
+    properties: {
+      'Titre': { title: [{ text: { content: txt } }] },
+      'Priorité ': { select: { name: "Aujourd'hui-urgent" } },
+      'Status Update': { status: { name: 'à traiter' } }
+    }
+  }).then(() => { loadPriorites(); loadTaches(); });
+}
+
+// ═══════════════════════════════════════════════
+// STATUS NOTION
+// ═══════════════════════════════════════════════
+function setNotionConnected(ok) {
+  const dot = document.getElementById('notion-dot');
+  const txt = document.getElementById('notion-status-txt');
+  dot.className = 'notion-dot ' + (ok ? 'connected' : 'error');
+  txt.textContent = ok ? 'Notion ✓' : 'Notion ✗';
+  document.getElementById('sync-info').textContent = 'Dernière sync : ' + new Date().toLocaleTimeString('fr-CA', {hour:'2-digit',minute:'2-digit'});
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+async function init() {
+  await Promise.all([loadVideTete(), loadPriorites(), loadTaches(), loadEpicerie(), loadIdees()]);
+  setInterval(loadVideTete, 5 * 60 * 1000);
+  setInterval(loadEpicerie, 5 * 60 * 1000);
+}
+init();
+</script>
+</body>
+</html>
