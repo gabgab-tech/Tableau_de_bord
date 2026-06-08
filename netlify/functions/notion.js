@@ -1,5 +1,3 @@
-const fetch = require('node-fetch');
-
 exports.handler = async (event) => {
   const { endpoint, body, method } = JSON.parse(event.body);
   const res = await fetch(`https://api.notion.com/v1/${endpoint}`, {
