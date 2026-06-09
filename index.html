@@ -566,10 +566,10 @@ async function loadTaches(){
   try{
     const data=await notionQuery(`databases/${DB_TACHES}/query`,{
       filter:{or:[
-        {property:'statut',statut:{equals:'Pas commencé'}},
-        {property:'statut',statut:{equals:'En cours'}}
+        {property:'status',statut:{equals:'Pas commencé'}},
+        {property:'status',statut:{equals:'En cours'}}
       ]},
-      sorts:[{property:'statut',direction:'ascending'}],
+      sorts:[{property:'status',direction:'ascending'}],
       page_size:15
     });
     el.innerHTML='';
@@ -630,8 +630,8 @@ async function openPrioModal(){
   try{
     const data=await notionQuery(`databases/${DB_TACHES}/query`,{
       filter:{or:[
-        {property:'statut',statut:{equals:'Pas commencé'}},
-        {property:'statut',statut:{equals:'En cours'}}
+        {property:'status',statut:{equals:'Pas commencé'}},
+        {property:'status',statut:{equals:'En cours'}}
       ]},
       page_size:20
     });
