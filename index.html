@@ -566,8 +566,8 @@ async function loadTaches(){
   try{
     const data=await notionQuery(`databases/${DB_TACHES}/query`,{
       filter:{or:[
-        {property:'status',statut:{equals:'Pas commencé'}},
-        {property:'status',statut:{equals:'En cours'}}
+        {property:'status',status:{equals:'Pas commencé'}},
+        {property:'status',status:{equals:'En cours'}}
       ]},
       sorts:[{property:'status',direction:'ascending'}],
       page_size:15
@@ -630,8 +630,8 @@ async function openPrioModal(){
   try{
     const data=await notionQuery(`databases/${DB_TACHES}/query`,{
       filter:{or:[
-        {property:'status',statut:{equals:'Pas commencé'}},
-        {property:'status',statut:{equals:'En cours'}}
+        {property:'status',status:{equals:'Pas commencé'}},
+        {property:'status',status:{equals:'En cours'}}
       ]},
       page_size:20
     });
