@@ -371,7 +371,16 @@
           <option>Insomnie</option>
         </select>
       </div>
-
+      
+    <!-- SIESTE -->
+      <div class="sante-section">
+        <div class="sante-section-title">😴 Sieste aujourd'hui</div>
+        <div class="med-grid" style="grid-template-columns:1fr 1fr;">
+          <button class="med-btn" id="sieste-non" onclick="toggleSieste(false)">Non</button>
+          <button class="med-btn" id="sieste-oui" onclick="toggleSieste(true)">Oui 😴</button>
+        </div>
+      </div>
+      
       <!-- ÉNERGIE / HUMEUR / ÉMOTIONS -->
       <div class="sante-row">
         <span class="sante-label">⚡ Énergie</span>
@@ -808,6 +817,14 @@ function filterMicro(time,btn){
 // ═══════════════════════════════════
 // JOURNAL SANTÉ
 // ═══════════════════════════════════
+let siesteOui = false;
+
+function toggleSieste(val) {
+  siesteOui = val;
+  document.getElementById('sieste-oui').classList.toggle('sel', val);
+  document.getElementById('sieste-non').classList.toggle('sel', !val);
+}
+  
 let santeEnergie='';
 let santeHumeur='';
 let medSelectees=new Set();
@@ -861,6 +878,7 @@ async function saveSante(){
         'amjevita':{checkbox:medSelectees.has('amjevita')},
         'ajovy':{checkbox:medSelectees.has('ajovy')},
         'efexor':{checkbox:medSelectees.has('efexor')},
+        'sieste': {checkbox: siesteOui},
         'qualité du sommeil':{multi_select:sommeil?[{name:sommeil}]:[]},
         'humeur / émotions':{rich_text:[{text:{content:humeurEmotionsEnergie}}]},
         'Symptôme':{rich_text:[{text:{content:symptome}}]},
