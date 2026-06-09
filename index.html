@@ -578,7 +578,7 @@ async function loadTaches(){
     }
     data.results.forEach(p=>{
       const titre=p.properties['Nom']?.title?.[0]?.plain_text||'(sans titre)';
-      const sphere=p.properties['sphère']?.select?.name||'';
+      const sphere=p.properties['sphere']?.select?.name||'';
       const statut=p.properties['statut']?.status?.name||'';
       const div=document.createElement('div');
       div.className='task-item';
@@ -614,7 +614,7 @@ async function loadPriorites(){
     }
     data.results.slice(0,3).forEach(p=>{
       const titre=p.properties['Nom']?.title?.[0]?.plain_text||'(sans titre)';
-      const sphere=p.properties['sphère']?.select?.name||'';
+      const sphere=p.properties['sphere']?.select?.name||'';
       const div=document.createElement('div');
       div.className='task-item';
       div.innerHTML=`<div class="task-check" onclick="terminerTache('${p.id}',this)"></div><div class="task-text">${titre}</div>${sphere?`<span class="task-tag ${tagClass(sphere)}">${sphere}</span>`:''}`;
@@ -691,7 +691,7 @@ async function loadProjets(){
     const colors={'soins naturels':'var(--sage)','coop':'var(--plum)','self care':'var(--sky)','loisir':'var(--gold)','famille':'var(--terracotta)','cuisine':'var(--gold)','perso':'var(--sky)','apprentissage':'var(--plum)','diagnostique comptable':'var(--terracotta)','Hannah':'var(--sage)'};
     data.results.forEach(p=>{
       const nom=p.properties['Nom du projet']?.title?.[0]?.plain_text||'(sans titre)';
-      const sphere=p.properties['sphére']?.select?.name||'';
+      const sphere=p.properties['sphere']?.select?.name||'';
       const statut=p.properties['Status']?.status?.name||'';
       const prio=p.properties['priorité']?.select?.name||'';
       const color=colors[sphere]||'var(--sky)';
