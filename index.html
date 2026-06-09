@@ -273,10 +273,10 @@
 <!-- COL 2 : CENTRE -->
 <div class="col">
 
-  <!-- AUJOURD'HUI -->
+  <!-- AUJOURDHUI -->
   <div>
     <div class="today-header">
-      <h2>Aujourd'hui</h2>
+      <h2>Aujourdhui</h2>
       <div style="font-size:0.65rem;opacity:0.7;font-family:'DM Mono',monospace;">3 priorités max</div>
     </div>
     <div class="today-body">
@@ -605,7 +605,7 @@ async function loadPriorites(){
   const el=document.getElementById('priorites-list');
   try{
     const data=await notionQuery(`databases/${DB_TACHES}/query`,{
-      filter:{property:"Aujourd'hui",checkbox:{equals:true}},
+      filter:{property:"Aujourdhui",checkbox:{equals:true}},
       page_size:3
     });
     el.innerHTML='';
@@ -639,7 +639,7 @@ async function openPrioModal(){
     el.innerHTML='';
     toutesLesTaches.forEach(p=>{
       const titre=p.properties['Nom']?.title?.[0]?.plain_text||'(sans titre)';
-      const isChecked=p.properties["Aujourd'hui"]?.checkbox===true;
+      const isChecked=p.properties["Aujourdhui"]?.checkbox===true;
       if(isChecked) prioSelectees.add(p.id);
       const div=document.createElement('div');
       div.className='modal-task';
@@ -660,9 +660,9 @@ async function savePriorites(){
   document.getElementById('prio-modal').classList.remove('open');
   for(const p of toutesLesTaches){
     const shouldBePrio=prioSelectees.has(p.id);
-    const isPrio=p.properties["Aujourd'hui"]?.checkbox===true;
+    const isPrio=p.properties["Aujourdhui"]?.checkbox===true;
     if(shouldBePrio!==isPrio){
-      await notionPatch(`pages/${p.id}`,{properties:{"Aujourd'hui":{checkbox:shouldBePrio}}});
+      await notionPatch(`pages/${p.id}`,{properties:{"Aujourdhui":{checkbox:shouldBePrio}}});
     }
   }
   loadPriorites();
